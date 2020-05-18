@@ -25,13 +25,14 @@ class CPU:
         if program == None:
             program = [
                 # From print8.ls8
-                # 0b10000010, # LDI R0,8
-                # 0b00000000,
-                # 0b00001000,
-                # 0b01000111, # PRN R0
-                # 0b00000000,
+                0b10000010, # LDI R0,8
+                0b00000000,
+                0b00001000,
+                0b01000111, # PRN R0
+                0b00000000,
                 0b00000001, # HLT
             ]
+
 
         for instruction in program:
             self.ram[address] = instruction
@@ -76,30 +77,33 @@ class CPU:
         """Run the CPU."""
         run = True
         #self.pc = 0 #program counter
-        instruction = self.ram_read(self.pc)
-        operand_a = self.ram_read(self.pc + 1)
-        operand_b = self.ram_read(self.pc + 2)
+
         while run == True:
+            instruction = self.ram_read(self.pc)
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
             if instruction == HLT:
                 run = False
                 print('halt!')
             elif instruction == LDI:
+                #print(operand_a, operand_b)
+                print('set value:', operand_b, 'to location:', operand_a)
                 self.reg[operand_a] = operand_b
                 self.pc += 3
 
             elif instruction == PRN:
-                print(operand_a)
+                print(self.reg[operand_a])
                 self.pc += 2
 
             else:
                 print("Unknown Instruction:", instruction, "at address:", self.pc)
                 sys.exit(1)
-        pass
+
 if __name__ == "__main__":
     file = sys.argv[1]
     print(file)
     prog = open(file, 'r')
     test = CPU()
-    test.load(prog)
+    test.load(None)
     test.run()
     #print([x for x in prog])
