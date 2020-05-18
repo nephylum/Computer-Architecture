@@ -1,34 +1,46 @@
 """CPU functionality."""
 
 import sys
+"""Set Instructions"""
+HLT = 0b00000001
+LDI = 0b10000010
+PRN = 0b01000111
 
 class CPU:
     """Main CPU class."""
 
     def __init__(self):
         """Construct a new CPU."""
+        self.ram = [0] * 256
+        self.reg = [0,0,0,0,0,0,0,0]
+        self.pc = 0
         pass
 
-    def load(self):
+    def load(self, program = None):
         """Load a program into memory."""
 
         address = 0
 
         # For now, we've just hardcoded a program:
-
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
+        if program == None:
+            program = [
+                # From print8.ls8
+                # 0b10000010, # LDI R0,8
+                # 0b00000000,
+                # 0b00001000,
+                # 0b01000111, # PRN R0
+                # 0b00000000,
+                0b00000001, # HLT
+            ]
 
         for instruction in program:
             self.ram[address] = instruction
             address += 1
+    def ram_read(self, address):
+        return self.ram[address]
+
+    def ram_write(self, address, data):
+            self.ram[address] = data
 
 
     def alu(self, op, reg_a, reg_b):
@@ -62,4 +74,32 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
+        run = True
+        #self.pc = 0 #program counter
+        instruction = self.ram_read(self.pc)
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        while run == True:
+            if instruction == HLT:
+                run = False
+                print('halt!')
+            elif instruction == LDI:
+                self.reg[operand_a] = operand_b
+                self.pc += 3
+
+            elif instruction == PRN:
+                print(operand_a)
+                self.pc += 2
+
+            else:
+                print("Unknown Instruction:", instruction, "at address:", self.pc)
+                sys.exit(1)
         pass
+if __name__ == "__main__":
+    file = sys.argv[1]
+    print(file)
+    prog = open(file, 'r')
+    test = CPU()
+    test.load(prog)
+    test.run()
+    #print([x for x in prog])
