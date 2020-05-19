@@ -5,6 +5,9 @@ import sys
 HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
+MUL = 0b10100010
+ADD = 0b10100000
+SUB = 0b10100001
 
 class CPU:
     """Main CPU class."""
@@ -43,7 +46,7 @@ class CPU:
             if commentspot > -1:
                 instruction = instruction[:commentspot]
             if len(instruction) > 0:
-                print(type(instruction))
+                # print(type(instruction))
                 self.ram[address] = int(instruction, 2)
                 address += 1
     def ram_read(self, address):
@@ -58,7 +61,10 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+        elif op == "SUB":
+            self.reg[reg_a] -= self.reg[reg_b]
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -99,7 +105,21 @@ class CPU:
                 print('set value:', operand_b, 'to location:', operand_a)
                 self.reg[operand_a] = operand_b
                 self.pc += 3
-
+            elif instruction == SUB:
+                print('Subtract:', self.reg[operand_a], 'and', self.reg[operand_b])
+                self.alu('SUB', operand_a, operand_b)
+                print('Result:', self.reg[operand_a])
+                self.pc += 3
+            elif instruction == ADD:
+                print('Add:', self.reg[operand_a], 'and', self.reg[operand_b])
+                self.alu('ADD', operand_a, operand_b)
+                print('Result:', self.reg[operand_a])
+                self.pc += 3
+            elif instruction == MUL:
+                print('Multiply:',self.reg[operand_a], "and", self.reg[operand_b])
+                self.alu('MUL', operand_a, operand_b)
+                print('Result:', self.reg[operand_a])
+                self.pc += 3
             elif instruction == PRN:
                 print(self.reg[operand_a])
                 self.pc += 2
@@ -108,8 +128,16 @@ class CPU:
                 sys.exit(1)
 
 if __name__ == "__main__":
-    file = sys.argv[1]
-    print(file)
+    if len(sys.argv) != 2:
+        print('Incorrect number of arguments. Only one file path accepted')
+        sys.exit(1)
+    try:
+        file = sys.argv[1]
+        print(file)
+    except:
+        Print(sys.argv[1], 'File not found!')
+        sys.exit(1)
+
     prog = open(file, 'r')
     test = CPU()
     test.load(prog)
