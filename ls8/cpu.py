@@ -35,8 +35,17 @@ class CPU:
 
 
         for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+
+            instruction = instruction.replace(',', '')
+            instruction = instruction.replace(' ', '')
+            instruction = instruction.replace('\n', '')
+            commentspot = instruction.find('#')
+            if commentspot > -1:
+                instruction = instruction[:commentspot]
+            if len(instruction) > 0:
+                print(type(instruction))
+                self.ram[address] = int(instruction, 2)
+                address += 1
     def ram_read(self, address):
         return self.ram[address]
 
@@ -94,7 +103,6 @@ class CPU:
             elif instruction == PRN:
                 print(self.reg[operand_a])
                 self.pc += 2
-
             else:
                 print("Unknown Instruction:", instruction, "at address:", self.pc)
                 sys.exit(1)
@@ -104,6 +112,6 @@ if __name__ == "__main__":
     print(file)
     prog = open(file, 'r')
     test = CPU()
-    test.load(None)
+    test.load(prog)
     test.run()
     #print([x for x in prog])
