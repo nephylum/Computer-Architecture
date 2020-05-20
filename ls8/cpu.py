@@ -8,7 +8,7 @@ PRN = 0b01000111
 MUL = 0b10100010
 ADD = 0b10100000
 SUB = 0b10100001
-
+DIV = 0b10100011
 class CPU:
     """Main CPU class."""
 
@@ -65,6 +65,8 @@ class CPU:
             self.reg[reg_a] -= self.reg[reg_b]
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "DIV":
+            self.reg[reg_a] /= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -118,6 +120,11 @@ class CPU:
             elif instruction == MUL:
                 print('Multiply:',self.reg[operand_a], "and", self.reg[operand_b])
                 self.alu('MUL', operand_a, operand_b)
+                print('Result:', self.reg[operand_a])
+                self.pc += 3
+            elif instruction == DIV:
+                print('Divide:', self.reg[operand_a], 'by', self.reg[operand_b])
+                self.alu('DIV', operand_a, operand_b)
                 print('Result:', self.reg[operand_a])
                 self.pc += 3
             elif instruction == PRN:
