@@ -9,6 +9,9 @@ MUL = 0b10100010
 ADD = 0b10100000
 SUB = 0b10100001
 DIV = 0b10100011
+PUSH = 0b01000101
+POP = 0b01000110
+
 class CPU:
     """Main CPU class."""
 
@@ -17,6 +20,7 @@ class CPU:
         self.ram = [0] * 256
         self.reg = [0,0,0,0,0,0,0,0]
         self.pc = 0
+        self.reg[7] = 0xF4
         pass
 
     def load(self, program = None):
@@ -130,6 +134,19 @@ class CPU:
             elif instruction == PRN:
                 print(self.reg[operand_a])
                 self.pc += 2
+            elif instruction == PUSH:
+
+                self.reg[7] -= 1
+                self.ram_write(self.reg[7], operand_a)
+                print('Push:', operand_a, 'to', self.reg[7])
+                self.pc += 2
+            elif instruction == POP:
+                if self.reg[7] == 0xF4:
+                    print("can't pop without a stack!")
+                else:
+                    print('Pop:', self.ram_read(self.reg[7]))
+                    self.reg[7] +=1
+                self.pc +=2
             else:
                 print("Unknown Instruction:", instruction, "at address:", self.pc)
                 sys.exit(1)
