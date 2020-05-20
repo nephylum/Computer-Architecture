@@ -11,7 +11,7 @@ SUB = 0b10100001
 DIV = 0b10100011
 PUSH = 0b01000101
 POP = 0b01000110
-
+SP = 7
 class CPU:
     """Main CPU class."""
 
@@ -20,7 +20,7 @@ class CPU:
         self.ram = [0] * 256
         self.reg = [0,0,0,0,0,0,0,0]
         self.pc = 0
-        self.reg[7] = 0xF4
+        self.reg[SP] = 0xF4
         pass
 
     def load(self, program = None):
@@ -108,7 +108,7 @@ class CPU:
                 print('halt!')
             elif instruction == LDI:
                 #print(operand_a, operand_b)
-                print('set value:', operand_b, 'to location:', operand_a)
+                print('Store:', operand_b, 'in', operand_a)
                 self.reg[operand_a] = operand_b
                 self.pc += 3
             elif instruction == SUB:
@@ -132,20 +132,24 @@ class CPU:
                 print('Result:', self.reg[operand_a])
                 self.pc += 3
             elif instruction == PRN:
-                print(self.reg[operand_a])
+                print("Print", self.reg[operand_a])
                 self.pc += 2
             elif instruction == PUSH:
+                if self.reg[SP]!=0x00:
 
-                self.reg[7] -= 1
-                self.ram_write(self.reg[7], operand_a)
-                print('Push:', operand_a, 'to', self.reg[7])
+                    self.reg[SP] -= 1
+                    self.ram_write(self.reg[SP], self.reg[operand_a])
+                    print('Push:', self.reg[operand_a], 'to', self.reg[SP])
+                else:
+                    print("stack full!")
                 self.pc += 2
             elif instruction == POP:
-                if self.reg[7] == 0xF4:
+                if self.reg[SP] == 0xF4:
                     print("can't pop without a stack!")
                 else:
-                    print('Pop:', self.ram_read(self.reg[7]))
-                    self.reg[7] +=1
+                    print('Pop:', self.ram_read(self.reg[SP]), 'from', self.reg[SP])
+                    self.reg[operand_a] = self.ram_read(self.reg[SP])
+                    self.reg[SP] +=1
                 self.pc +=2
             else:
                 print("Unknown Instruction:", instruction, "at address:", self.pc)
