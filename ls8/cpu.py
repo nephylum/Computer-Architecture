@@ -11,7 +11,10 @@ SUB = 0b10100001
 DIV = 0b10100011
 PUSH = 0b01000101
 POP = 0b01000110
+CALL = 0b01010000
+RET = 0b00010001
 SP = 7
+
 class CPU:
     """Main CPU class."""
 
@@ -151,6 +154,17 @@ class CPU:
                     self.reg[operand_a] = self.ram_read(self.reg[SP])
                     self.reg[SP] +=1
                 self.pc +=2
+            elif instruction == CALL:
+                print('CALL', self.reg[operand_a])
+                self.ram_write(self.reg[SP], self.pc + 2)
+                self.reg[SP] -= 1
+                self.pc = self.ram_read(operand_a + 1)
+
+            elif instruction == RET:
+                print('RET', self.ram_read(self.reg[SP] + 1))
+
+                self.pc = self.ram_read(self.reg[SP] + 1)
+                self.reg[SP] += 1
             else:
                 print("Unknown Instruction:", instruction, "at address:", self.pc)
                 sys.exit(1)
