@@ -108,7 +108,7 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
             if instruction == HLT:
                 run = False
-                print('halt!')
+                #print('halt!')
             elif instruction == LDI:
                 #print(operand_a, operand_b)
                 print('Store:', operand_b, 'in', operand_a)
@@ -135,7 +135,7 @@ class CPU:
                 print('Result:', self.reg[operand_a])
                 self.pc += 3
             elif instruction == PRN:
-                print("Print", self.reg[operand_a])
+                print("\nPrint\n", self.reg[operand_a],"\n")
                 self.pc += 2
             elif instruction == PUSH:
                 if self.reg[SP]!=0x00:
@@ -148,20 +148,20 @@ class CPU:
                 self.pc += 2
             elif instruction == POP:
                 if self.reg[SP] == 0xF4:
-                    print("can't pop without a stack!")
+                    print("No stack!")
                 else:
                     print('Pop:', self.ram_read(self.reg[SP]), 'from', self.reg[SP])
                     self.reg[operand_a] = self.ram_read(self.reg[SP])
                     self.reg[SP] +=1
                 self.pc +=2
             elif instruction == CALL:
-                print('CALL', self.reg[operand_a])
+                print('CALL --->', self.reg[operand_a])
                 self.ram_write(self.reg[SP], self.pc + 2)
                 self.reg[SP] -= 1
                 self.pc = self.ram_read(operand_a + 1)
 
             elif instruction == RET:
-                print('RET', self.ram_read(self.reg[SP] + 1))
+                print('RET --->', self.ram_read(self.reg[SP] + 1))
 
                 self.pc = self.ram_read(self.reg[SP] + 1)
                 self.reg[SP] += 1
@@ -184,4 +184,3 @@ if __name__ == "__main__":
     test = CPU()
     test.load(prog)
     test.run()
-    #print([x for x in prog])
