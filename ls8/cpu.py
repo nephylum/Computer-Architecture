@@ -125,7 +125,7 @@ class CPU:
                 print('Result:', self.reg[operand_a])
                 self.pc += 3
             elif instruction == MUL:
-                print('Multiply:',self.reg[operand_a], "and", self.reg[operand_b])
+                print('Multiply slot',operand_a,'(',self.reg[operand_a], ") and slot",operand_b,'(', self.reg[operand_b],')')
                 self.alu('MUL', operand_a, operand_b)
                 print('Result:', self.reg[operand_a])
                 self.pc += 3
@@ -135,7 +135,7 @@ class CPU:
                 print('Result:', self.reg[operand_a])
                 self.pc += 3
             elif instruction == PRN:
-                print("\nPrint\n", self.reg[operand_a],"\n")
+                print("\nPrint -->", self.reg[operand_a],"\n")
                 self.pc += 2
             elif instruction == PUSH:
                 if self.reg[SP]!=0x00:
