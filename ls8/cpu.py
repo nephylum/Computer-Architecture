@@ -45,10 +45,11 @@ class CPU:
 
 
         for instruction in program:
-
+            #cleans out program code
             instruction = instruction.replace(',', '')
             instruction = instruction.replace(' ', '')
             instruction = instruction.replace('\n', '')
+            #find where comments are
             commentspot = instruction.find('#')
             if commentspot > -1:
                 instruction = instruction[:commentspot]
@@ -100,7 +101,6 @@ class CPU:
     def run(self):
         """Run the CPU."""
         run = True
-        #self.pc = 0 #program counter
 
         while run == True:
             instruction = self.ram_read(self.pc)
@@ -108,9 +108,7 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
             if instruction == HLT:
                 run = False
-                #print('halt!')
             elif instruction == LDI:
-                #print(operand_a, operand_b)
                 print('Store:', operand_b, 'in', operand_a)
                 self.reg[operand_a] = operand_b
                 self.pc += 3
@@ -159,10 +157,8 @@ class CPU:
                 self.ram_write(self.reg[SP], self.pc + 2)
                 self.reg[SP] -= 1
                 self.pc = self.ram_read(operand_a + 1)
-
             elif instruction == RET:
                 print('RET --->', self.ram_read(self.reg[SP] + 1))
-
                 self.pc = self.ram_read(self.reg[SP] + 1)
                 self.reg[SP] += 1
             else:
